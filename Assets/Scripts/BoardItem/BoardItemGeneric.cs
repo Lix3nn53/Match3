@@ -127,7 +127,11 @@ public class BoardItemGeneric : BoardItem
                 CurrentSlot = slotToFallInto;
                 slotToFallInto.CurrentItem = this;
 
-                StartFalling();
+                bool startFall = StartFalling();
+                if (startFall)
+                {
+                    Board.Instance.StartFallingInto(slotToFallInto.Position);
+                }
             })
         );
 

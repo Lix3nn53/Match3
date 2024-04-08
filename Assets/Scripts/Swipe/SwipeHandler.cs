@@ -38,26 +38,5 @@ public class SwipeHandler : MonoBehaviour
         {
             Board.Instance.DestroyOne(extraSlot.CurrentItem);
         }
-
-        // Test(currentPosition).Forget();
-    }
-
-    private async UniTaskVoid Test(Vector2Int currentPosition)
-    {
-        await UniTask.NextFrame();
-
-        BoardSlot extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down);
-        if (extraSlot != null)
-        {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
-        }
-
-        await UniTask.NextFrame();
-
-        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.down);
-        if (extraSlot != null)
-        {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
-        }
     }
 }

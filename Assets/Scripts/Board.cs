@@ -84,6 +84,15 @@ public class Board : MonoBehaviour
 
     public void DestroyOne(BoardItem item)
     {
+        if (item == null)
+        {
+            return;
+        }
+        if (item.CurrentSlot == null)
+        {
+            return;
+        }
+
         Vector2Int currentPosition = item.CurrentSlot.Position;
 
         bool destroy = item.DestroySelf();

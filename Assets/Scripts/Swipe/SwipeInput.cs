@@ -11,6 +11,8 @@ using UnityEngine;
 
 public class SwipeInput : MonoBehaviour
 {
+    // References
+    private EventManager _eventManager;
 
     // If the touch is longer than MAX_SWIPE_TIME, we dont consider it a swipe
     [SerializeField] private float MAX_SWIPE_TIME = 0.2f;
@@ -21,6 +23,10 @@ public class SwipeInput : MonoBehaviour
 
     private Vector2 _startPos;
     private float _startTime;
+    private void Start()
+    {
+        _eventManager = EventManager.Instance;
+    }
 
     private void Update()
     {
@@ -55,8 +61,7 @@ public class SwipeInput : MonoBehaviour
                     if (hit)
                     {
                         // Hit an active BoardItem hit.collider.gameObject
-                        Debug.Log("Object at start position: " + hit.collider.gameObject.name, hit.collider.gameObject);
-                        Debug.Log("Swipe: " + swipeType);
+                        _eventManager.OnSwipe?.Invoke(hit.collider.gameObject.GetComponent<BoardItem>(), swipeType);
                     }
                 }
             }

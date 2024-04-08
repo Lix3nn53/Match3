@@ -7,5 +7,6 @@ public enum BoardItemType
     Type00,
     Type01,
     Type02,
-    Type03
+    Type03,
+    Obstacle01
 }

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2679086074502518496}
   - component: {fileID: 5103721451549845727}
   - component: {fileID: 1658459373673858407}
-  - component: {fileID: 7896320745313700707}
+  - component: {fileID: 6266627954054981375}
   m_Layer: 0
-  m_Name: Item03
+  m_Name: Obstacle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 50dd2e8acaa7426438d693e39eb73026, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1cdd3cf168e40c448bee42e5c5fe3056, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -122,7 +122,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.7391304, y: 1.7391304}
+    oldSize: {x: 2, y: 2}
     newSize: {x: 1.45, y: 1.45}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.7391304, y: 1.7391304}
   m_EdgeRadius: 0
---- !u!114 &7896320745313700707
+--- !u!114 &6266627954054981375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4932696780612036309}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 356aebf0c47409f489762ce56d068f71, type: 3}
+  m_Script: {fileID: 11500000, guid: e48550045edb82640a4b8b6db3d63d3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _type: 3
+  _type: 4

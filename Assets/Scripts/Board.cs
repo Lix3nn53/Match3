@@ -21,7 +21,6 @@ public class Board : MonoBehaviour
 
         SetUp();
     }
-
     private void SetUp()
     {
         float startX = (-_width * _halfDistance) + transform.position.x;
@@ -35,7 +34,7 @@ public class Board : MonoBehaviour
 
                 GameObject slotGameObject = Instantiate(_slotPrefab, pos, Quaternion.identity, transform);
                 BoardSlot boardSlot = slotGameObject.GetComponent<BoardSlot>();
-                boardSlot.Position = new Vector2(i, j);
+                boardSlot.Position = new Vector2Int(i, j);
                 boardSlot.FillRandom();
                 _grid[i, j] = boardSlot;
 
@@ -44,14 +43,20 @@ public class Board : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    private void Update()
+    public BoardSlot GetBoardSlot(Vector2Int center, Vector2Int offset)
     {
+        int x = center.x + offset.x;
+        int y = center.y + offset.y;
 
-    }
-
-    public void Swap()
-    {
-
+        // Check if the coordinates are within the bounds of the grid
+        if (x >= 0 && x < _width && y >= 0 && y < _height)
+        {
+            return _grid[x, y];
+        }
+        else
+        {
+            // Handle out-of-bounds case
+            return null;
+        }
     }
 }

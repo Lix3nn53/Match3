@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BoardSlot : MonoBehaviour
 {
-    public Vector2 Position;
+    public Vector2Int Position;
 
     public void FillRandom()
     {
@@ -29,5 +29,15 @@ public class BoardSlot : MonoBehaviour
         BoardItemType randomEnumValue = (BoardItemType)enumValues.GetValue(randomIndex);
 
         return randomEnumValue;
+    }
+
+    public BoardItem GetCurrentItem()
+    {
+        if (transform.childCount == 0)
+        {
+            return null;
+        }
+
+        return transform.GetChild(0).GetComponent<BoardItem>();
     }
 }

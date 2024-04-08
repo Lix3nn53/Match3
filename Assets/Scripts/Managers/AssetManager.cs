@@ -27,6 +27,7 @@ public class AssetManager : MonoBehaviour
     public GameObject ItemType01;
     public GameObject ItemType02;
     public GameObject ItemType03;
+    public GameObject ItemObstacle01;
     public GameObject GetItemTypePrefab(BoardItemType type)
     {
         switch (type)
@@ -39,6 +40,8 @@ public class AssetManager : MonoBehaviour
                 return ItemType02;
             case BoardItemType.Type03:
                 return ItemType03;
+            case BoardItemType.Obstacle01:
+                return ItemObstacle01;
         }
 
         return null;

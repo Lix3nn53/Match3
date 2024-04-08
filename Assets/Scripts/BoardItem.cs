@@ -1,8 +1,26 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class BoardItem : MonoBehaviour
+public abstract class BoardItem : MonoBehaviour
 {
     [SerializeField] private BoardItemType _type;
+
+    public void DestroySelf()
+    {
+        Destroy(gameObject);
+    }
+
+    public BoardSlot GetCurrentSlot()
+    {
+        if (transform.parent == null)
+        {
+            throw new System.Exception("Parent is null");
+        }
+
+        return transform.parent.GetComponent<BoardSlot>();
+    }
+
+    public abstract bool StartFalling();
 }

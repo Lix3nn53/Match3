@@ -17,44 +17,6 @@ public class SwipeHandler : MonoBehaviour
     }
     private void OnSwipeListener(BoardItem item, SwipeType swipeType)
     {
-        Debug.Log("Object at start position: " + item.gameObject.name, item.gameObject);
-        Debug.Log("Swipe: " + swipeType);
-        item.DestroySelf();
-
-        bool startFall = false;
-
-        BoardSlot slot = _board.GetBoardSlot(item.GetCurrentSlot().Position, Vector2Int.up);
-        if (slot != null)
-        {
-            BoardItem currentItem = slot.GetCurrentItem();
-            if (currentItem != null)
-            {
-                startFall = currentItem.StartFalling();
-            }
-        }
-        if (!startFall)
-        {
-            slot = _board.GetBoardSlot(item.GetCurrentSlot().Position, Vector2Int.up + Vector2Int.left);
-            if (slot != null)
-            {
-                BoardItem currentItem = slot.GetCurrentItem();
-                if (currentItem != null)
-                {
-                    startFall = currentItem.StartFalling();
-                }
-            }
-            if (!startFall)
-            {
-                slot = _board.GetBoardSlot(item.GetCurrentSlot().Position, Vector2Int.up + Vector2Int.right);
-                if (slot != null)
-                {
-                    BoardItem currentItem = slot.GetCurrentItem();
-                    if (currentItem != null)
-                    {
-                        startFall = currentItem.StartFalling();
-                    }
-                }
-            }
-        }
+        Board.Instance.DestroyOne(item);
     }
 }

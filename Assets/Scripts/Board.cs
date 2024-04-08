@@ -11,6 +11,22 @@ public class Board : MonoBehaviour
     private BoardSlot[,] _grid;
 
     private GameObject _slotPrefab;
+    // Singleton
+    public static Board Instance { get; private set; }
+
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -57,6 +73,75 @@ public class Board : MonoBehaviour
         {
             // Handle out-of-bounds case
             return null;
+        }
+    }
+
+    public void DestroyOne(BoardItem item)
+    {
+        Vector2Int currentPosition = item.GetCurrentSlot().Position;
+
+        item.DestroySelf();
+
+        StartFalling(currentPosition);
+    }
+
+    public void StartFalling(Vector2Int emptyPosition)
+    {
+        // Middle Up
+        BoardSlot slot = GetBoardSlot(emptyPosition, Vector2Int.up);
+        if (slot != null)
+        {
+            BoardItem currentItem = slot.GetCurrentItem();
+            if (currentItem == null)
+            {
+                // if Middle Up is empty do nothing and return
+                return;
+            }
+            bool startFall = currentItem.StartFalling();
+            if (startFall)
+            {
+                StartFalling(slot.Position);
+                return;
+            }
+        }
+
+
+        // Middle Up is obstacle
+        // Check Middle Up Left
+        slot = GetBoardSlot(emptyPosition, Vector2Int.up + Vector2Int.left);
+        if (slot != null)
+        {
+            BoardItem currentItem = slot.GetCurrentItem();
+            if (currentItem == null)
+            {
+                // if Middle Up is empty do nothing and return
+                return;
+            }
+            bool startFall = currentItem.StartFalling();
+            if (startFall)
+            {
+                StartFalling(slot.Position);
+                return;
+            }
+        }
+
+        // Middle Up Left is obstacle
+        // Check Middle Up Right
+        slot = GetBoardSlot(emptyPosition, Vector2Int.up + Vector2Int.right);
+        if (slot != null)
+        {
+            BoardItem currentItem = slot.GetCurrentItem();
+            if (currentItem == null)
+            {
+                // if Middle Up is empty do nothing and return
+                return;
+            }
+            bool startFall = currentItem.StartFalling();
+            if (startFall)
+            {
+                StartFalling(slot.Position);
+                return;
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ public abstract class BoardItem : MonoBehaviour
 
     public void DestroySelf()
     {
+        transform.parent = null;
         Destroy(gameObject);
     }
 

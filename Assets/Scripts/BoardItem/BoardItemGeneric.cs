@@ -7,15 +7,15 @@ using DG.Tweening;
 public class BoardItemGeneric : BoardItem
 {
     public static float TWEEN_DURATION = .5f;
-    private readonly TweenChain _tweenChain = new TweenChain();
+    private Sequence _tweenChain;
     private void OnDestroy()
     {
-        _tweenChain.Destroy();
+        _tweenChain?.Kill();
     }
 
     public override bool DestroySelf()
     {
-        if (_tweenChain.IsRunning())
+        if (_tweenChain != null)
         {
             return false;
         }
@@ -99,18 +99,18 @@ public class BoardItemGeneric : BoardItem
         // gameObject.SetActive(true);
         // transform.position = slotToFallInto.transform.position;
 
-        Sequence mySequence = DOTween.Sequence();
+        _tweenChain = DOTween.Sequence();
 
         if (oldSlot is BoardSlotFactory boardSlotFactory)
         {
-            float startDelay = boardSlotFactory.Count * TWEEN_DURATION;
+            float startDelay = boardSlotFactory.CountForDelay * TWEEN_DURATION;
 
-            boardSlotFactory.Count++;
+            boardSlotFactory.CountForDelay++;
 
-            mySequence.PrependInterval(startDelay);
+            _tweenChain.PrependInterval(startDelay);
         }
 
-        mySequence.Append(
+        _tweenChain.Append(
             transform.DOMove(slotToFallInto.transform.position, TWEEN_DURATION)
             .SetEase(Ease.Linear)
             .OnStart(() =>
@@ -119,9 +119,9 @@ public class BoardItemGeneric : BoardItem
             })
             .OnComplete(() =>
             {
-                if (oldSlot is BoardSlotFactory a)
+                if (oldSlot is BoardSlotFactory boardSlotFactory)
                 {
-                    a.Count--;
+                    boardSlotFactory.CountForDelay--;
                 }
 
                 CurrentSlot = slotToFallInto;
@@ -132,9 +132,11 @@ public class BoardItemGeneric : BoardItem
                 {
                     Board.Instance.StartFallingInto(slotToFallInto.Position);
                 }
+
+                _tweenChain = null;
             })
         );
 
-        _tweenChain.AddAndPlay(mySequence);
+        _tweenChain.Play();
     }
 }

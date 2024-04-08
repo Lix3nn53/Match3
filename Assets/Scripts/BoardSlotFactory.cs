@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BoardSlotFactory : BoardSlot
 {
-    public int Count;
+    public int CountForDelay;
 
     public override void FillRandom()
     {

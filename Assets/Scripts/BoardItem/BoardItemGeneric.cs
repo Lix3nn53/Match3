@@ -34,12 +34,10 @@ public class BoardItemGeneric : BoardItem
 
         BoardSlot oldSlot = CurrentSlot;
         oldSlot.CurrentItem = null;
-        slotToFallInto.CurrentItem = this;
-        CurrentSlot = slotToFallInto;
-
-        MoveAnimation(oldSlot).Forget();
-
+        CurrentSlot = null;
         Board.Instance.OnSlotEmpty(oldSlot);
+
+        StartMoveAnimation(oldSlot, slotToFallInto);
 
         // if (oldSlot is BoardSlotFactory boardSlotFactory)
         // {
@@ -96,42 +94,43 @@ public class BoardItemGeneric : BoardItem
         return null;
     }
 
-    private async UniTaskVoid MoveAnimation(BoardSlot oldSlot)
+    private void StartMoveAnimation(BoardSlot oldSlot, BoardSlot slotToFallInto)
     {
+        // gameObject.SetActive(true);
+        // transform.position = slotToFallInto.transform.position;
+
         Sequence mySequence = DOTween.Sequence();
 
-        float startDelay = 0;
         if (oldSlot is BoardSlotFactory boardSlotFactory)
         {
-            startDelay = boardSlotFactory.Count * TWEEN_DURATION;
+            float startDelay = boardSlotFactory.Count * TWEEN_DURATION;
 
             boardSlotFactory.Count++;
 
             mySequence.PrependInterval(startDelay);
         }
 
-        DelayedActivation(startDelay).Forget();
+        mySequence.Append(
+            transform.DOMove(slotToFallInto.transform.position, TWEEN_DURATION)
+            .SetEase(Ease.Linear)
+            .OnStart(() =>
+            {
+                gameObject.SetActive(true);
+            })
+            .OnComplete(() =>
+            {
+                if (oldSlot is BoardSlotFactory a)
+                {
+                    a.Count--;
+                }
 
-        // transform.position = CurrentSlot.transform.position;
-        mySequence.Append(transform.DOMove(CurrentSlot.transform.position, TWEEN_DURATION).SetEase(Ease.Linear));
+                CurrentSlot = slotToFallInto;
+                slotToFallInto.CurrentItem = this;
+
+                StartFalling();
+            })
+        );
 
         _tweenChain.AddAndPlay(mySequence);
-
-        await UniTask.Delay(TimeSpan.FromSeconds(TWEEN_DURATION));
-
-        if (oldSlot is BoardSlotFactory a)
-        {
-            a.Count--;
-        }
-    }
-
-    private async UniTaskVoid DelayedActivation(float delay)
-    {
-        if (delay > 0)
-        {
-            await UniTask.Delay(TimeSpan.FromSeconds(delay));
-        }
-
-        gameObject.SetActive(true);
     }
 }

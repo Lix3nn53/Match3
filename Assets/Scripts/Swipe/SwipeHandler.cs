@@ -18,6 +18,11 @@ public class SwipeHandler : MonoBehaviour
     }
     private void OnSwipeListener(BoardItem item, SwipeType swipeType)
     {
+        if (item.CurrentSlot == null)
+        {
+            return;
+        }
+
         Vector2Int currentPosition = item.CurrentSlot.Position;
 
         Board.Instance.DestroyOne(item);

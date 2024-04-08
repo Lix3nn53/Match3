@@ -94,7 +94,7 @@ public class Board : MonoBehaviour
         }
 
         StartFallingInto(currentPosition);
-        StartFalling(GetBoardSlot(currentPosition));
+        // StartFalling(GetBoardSlot(currentPosition));
     }
 
     public bool StartFalling(BoardSlot slot)

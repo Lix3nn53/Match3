@@ -13,8 +13,12 @@ public class BoardItemGeneric : BoardItem
             return false;
         }
 
+        BoardSlot currentParent = transform.parent.GetComponent<BoardSlot>();
+
         transform.parent = slotToFallInto.transform;
         transform.localPosition = Vector2.zero;
+
+        Board.Instance.OnSlotEmpty(currentParent);
 
         return true;
     }
@@ -39,7 +43,7 @@ public class BoardItemGeneric : BoardItem
 
         // Middle Down is not empty
         // Check Middle Down Left
-        slot = board.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.left);
+        slot = board.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.right);
         if (slot != null)
         {
             BoardItem currentItem = slot.GetCurrentItem();
@@ -52,7 +56,7 @@ public class BoardItemGeneric : BoardItem
 
         // Middle Down Left is not empty
         // Check Middle Down Right
-        slot = board.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.right);
+        slot = board.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.left);
         if (slot != null)
         {
             BoardItem currentItem = slot.GetCurrentItem();

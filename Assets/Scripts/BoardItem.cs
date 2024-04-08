@@ -9,8 +9,12 @@ public abstract class BoardItem : MonoBehaviour
 
     public void DestroySelf()
     {
+        BoardSlot currentParent = transform.parent.GetComponent<BoardSlot>();
+
         transform.parent = null;
         Destroy(gameObject);
+
+        Board.Instance.OnSlotEmpty(currentParent);
     }
 
     public BoardSlot GetCurrentSlot()

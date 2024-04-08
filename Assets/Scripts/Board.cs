@@ -33,7 +33,7 @@ public class Board : MonoBehaviour
     {
         _slotPrefab = AssetManager.Instance.SlotPrefab;
 
-        _grid = new BoardSlot[_width, _height];
+        _grid = new BoardSlot[_width, _height + 1];
 
         SetUp();
     }
@@ -44,17 +44,26 @@ public class Board : MonoBehaviour
 
         for (int i = 0; i < _width; i++)
         {
-            for (int j = 0; j < _height; j++)
+            for (int j = 0; j < _height + 1; j++)
             {
                 Vector2 pos = new Vector2(startX + (i * _halfDistance * 2) + _halfDistance, startY + (j * _halfDistance * 2) + _halfDistance);
 
                 GameObject slotGameObject = Instantiate(_slotPrefab, pos, Quaternion.identity, transform);
                 BoardSlot boardSlot = slotGameObject.GetComponent<BoardSlot>();
                 boardSlot.Position = new Vector2Int(i, j);
-                boardSlot.FillRandom();
                 _grid[i, j] = boardSlot;
 
                 slotGameObject.name = "GridSlot(" + i + ", " + j + ")";
+
+                if (j == _height)
+                {
+                    slotGameObject.SetActive(false);
+                    boardSlot.FillRandom(false);
+                }
+                else
+                {
+                    boardSlot.FillRandom(true);
+                }
             }
         }
     }
@@ -65,7 +74,7 @@ public class Board : MonoBehaviour
         int y = center.y + offset.y;
 
         // Check if the coordinates are within the bounds of the grid
-        if (x >= 0 && x < _width && y >= 0 && y < _height)
+        if (x >= 0 && x < _width && y >= 0 && y < _height + 1)
         {
             return _grid[x, y];
         }
@@ -142,6 +151,14 @@ public class Board : MonoBehaviour
                 StartFalling(slot.Position);
                 return;
             }
+        }
+    }
+
+    public void OnSlotEmpty(BoardSlot slot)
+    {
+        if (slot.Position.y == _height)
+        {
+            slot.FillRandom(false);
         }
     }
 }

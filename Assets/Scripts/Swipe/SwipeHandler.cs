@@ -18,20 +18,20 @@ public class SwipeHandler : MonoBehaviour
     }
     private void OnSwipeListener(BoardItem item, SwipeType swipeType)
     {
-        Vector2Int currentPosition = item.GetCurrentSlot().Position;
+        Vector2Int currentPosition = item.CurrentSlot.Position;
 
         Board.Instance.DestroyOne(item);
 
         BoardSlot extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down);
         if (extraSlot != null)
         {
-            Board.Instance.DestroyOne(extraSlot.GetCurrentItem());
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
         }
 
         extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.down);
         if (extraSlot != null)
         {
-            Board.Instance.DestroyOne(extraSlot.GetCurrentItem());
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
         }
 
         // Test(currentPosition).Forget();
@@ -44,7 +44,7 @@ public class SwipeHandler : MonoBehaviour
         BoardSlot extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down);
         if (extraSlot != null)
         {
-            Board.Instance.DestroyOne(extraSlot.GetCurrentItem());
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
         }
 
         await UniTask.NextFrame();
@@ -52,7 +52,7 @@ public class SwipeHandler : MonoBehaviour
         extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.down);
         if (extraSlot != null)
         {
-            Board.Instance.DestroyOne(extraSlot.GetCurrentItem());
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
         }
     }
 }

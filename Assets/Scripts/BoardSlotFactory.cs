@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class BoardSlotFactory : BoardSlot
 {
+    public int Count;
+
+    public override void FillRandom()
+    {
+        base.FillRandom();
+        CurrentItem.gameObject.SetActive(false);
+    }
+
     public override BoardItemType GetRandomItem()
     {
         // Get all values of the enum

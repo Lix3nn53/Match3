@@ -6,25 +6,19 @@ using UnityEngine;
 public abstract class BoardItem : MonoBehaviour
 {
     [SerializeField] private BoardItemType _type;
+    public BoardSlot CurrentSlot;
 
-    public void DestroySelf()
+    public virtual bool DestroySelf()
     {
-        BoardSlot currentParent = transform.parent.GetComponent<BoardSlot>();
+        CurrentSlot.CurrentItem = null;
 
-        transform.parent = null;
         Destroy(gameObject);
 
-        Board.Instance.OnSlotEmpty(currentParent);
-    }
+        Board.Instance.OnSlotEmpty(CurrentSlot);
 
-    public BoardSlot GetCurrentSlot()
-    {
-        if (transform.parent == null)
-        {
-            throw new System.Exception("Parent is null");
-        }
+        CurrentSlot = null;
 
-        return transform.parent.GetComponent<BoardSlot>();
+        return true;
     }
 
     public abstract bool StartFalling();

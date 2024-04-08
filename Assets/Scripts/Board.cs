@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
+    public int ItemCount = 0;
     [SerializeField] private int _width;
     [SerializeField] private int _height;
     [SerializeField] private float _halfDistance = .5f;
@@ -83,9 +84,14 @@ public class Board : MonoBehaviour
 
     public void DestroyOne(BoardItem item)
     {
-        Vector2Int currentPosition = item.GetCurrentSlot().Position;
+        Vector2Int currentPosition = item.CurrentSlot.Position;
 
-        item.DestroySelf();
+        bool destroy = item.DestroySelf();
+
+        if (!destroy)
+        {
+            return;
+        }
 
         StartFallingInto(currentPosition);
         StartFalling(GetBoardSlot(currentPosition));
@@ -95,7 +101,7 @@ public class Board : MonoBehaviour
     {
         if (slot != null)
         {
-            BoardItem currentItem = slot.GetCurrentItem();
+            BoardItem currentItem = slot.CurrentItem;
             if (currentItem == null)
             {
                 // if empty do nothing and return

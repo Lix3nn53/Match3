@@ -4,6 +4,7 @@ using UnityEngine;
 public class BoardSlot : MonoBehaviour
 {
     public Vector2Int Position;
+    public BoardItem CurrentItem = null;
 
     public virtual void FillRandom()
     {
@@ -11,9 +12,13 @@ public class BoardSlot : MonoBehaviour
 
         GameObject _slotPrefab = AssetManager.Instance.GetItemTypePrefab(Type);
 
-        GameObject boardItemGameObject = Instantiate(_slotPrefab, transform.position, Quaternion.identity, transform);
+        GameObject boardItemGameObject = Instantiate(_slotPrefab, transform.position, Quaternion.identity, null);
 
-        BoardItem boardItem = boardItemGameObject.GetComponent<BoardItem>();
+        CurrentItem = boardItemGameObject.GetComponent<BoardItem>();
+        CurrentItem.CurrentSlot = this;
+
+        CurrentItem.gameObject.name = "Item#" + Board.Instance.ItemCount;
+        Board.Instance.ItemCount++;
     }
 
     // Function to get a random enum value
@@ -29,15 +34,5 @@ public class BoardSlot : MonoBehaviour
         BoardItemType randomEnumValue = (BoardItemType)enumValues.GetValue(randomIndex);
 
         return randomEnumValue;
-    }
-
-    public BoardItem GetCurrentItem()
-    {
-        if (transform.childCount == 0)
-        {
-            return null;
-        }
-
-        return transform.GetChild(0).GetComponent<BoardItem>();
     }
 }

@@ -6,10 +6,21 @@ using DG.Tweening;
 
 public class BoardItemGeneric : BoardItem
 {
+    public static float TWEEN_DURATION = .5f;
     private readonly TweenChain _tweenChain = new TweenChain();
     private void OnDestroy()
     {
         _tweenChain.Destroy();
+    }
+
+    public override bool DestroySelf()
+    {
+        if (_tweenChain.IsRunning())
+        {
+            return false;
+        }
+
+        return base.DestroySelf();
     }
 
     public override bool StartFalling()
@@ -21,15 +32,19 @@ public class BoardItemGeneric : BoardItem
             return false;
         }
 
-        BoardSlot currentParent = transform.parent.GetComponent<BoardSlot>();
+        BoardSlot oldSlot = CurrentSlot;
+        oldSlot.CurrentItem = null;
+        slotToFallInto.CurrentItem = this;
+        CurrentSlot = slotToFallInto;
 
-        transform.parent = slotToFallInto.transform;
-        // transform.localPosition = Vector2.zero;
-        MoveAnimation(0).Forget();
+        MoveAnimation(oldSlot).Forget();
 
-        Board.Instance.OnSlotEmpty(currentParent);
+        Board.Instance.OnSlotEmpty(oldSlot);
 
-        // Debug.Log("from: " + currentParent.Position + " to " + slotToFallInto.Position, gameObject);
+        // if (oldSlot is BoardSlotFactory boardSlotFactory)
+        // {
+        //     Debug.Log("from: " + oldSlot.Position + " to " + slotToFallInto.Position, gameObject);
+        // }
 
         return true;
     }
@@ -38,13 +53,13 @@ public class BoardItemGeneric : BoardItem
     {
         Board board = Board.Instance;
 
-        Vector2Int currentPosition = GetCurrentSlot().Position;
+        Vector2Int currentPosition = CurrentSlot.Position;
 
         // Middle Down
         BoardSlot slot = board.GetBoardSlot(currentPosition, Vector2Int.down);
         if (slot != null)
         {
-            BoardItem currentItem = slot.GetCurrentItem();
+            BoardItem currentItem = slot.CurrentItem;
             if (currentItem == null)
             {
                 // if Middle Down is empty 
@@ -57,7 +72,7 @@ public class BoardItemGeneric : BoardItem
         slot = board.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.right);
         if (slot != null)
         {
-            BoardItem currentItem = slot.GetCurrentItem();
+            BoardItem currentItem = slot.CurrentItem;
             if (currentItem == null)
             {
                 // if Middle Down Left is empty
@@ -70,7 +85,7 @@ public class BoardItemGeneric : BoardItem
         slot = board.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.left);
         if (slot != null)
         {
-            BoardItem currentItem = slot.GetCurrentItem();
+            BoardItem currentItem = slot.CurrentItem;
             if (currentItem == null)
             {
                 // if Middle Down Right is empty
@@ -81,14 +96,42 @@ public class BoardItemGeneric : BoardItem
         return null;
     }
 
-    private async UniTaskVoid MoveAnimation(float delay)
+    private async UniTaskVoid MoveAnimation(BoardSlot oldSlot)
+    {
+        Sequence mySequence = DOTween.Sequence();
+
+        float startDelay = 0;
+        if (oldSlot is BoardSlotFactory boardSlotFactory)
+        {
+            startDelay = boardSlotFactory.Count * TWEEN_DURATION;
+
+            boardSlotFactory.Count++;
+
+            mySequence.PrependInterval(startDelay);
+        }
+
+        DelayedActivation(startDelay).Forget();
+
+        // transform.position = CurrentSlot.transform.position;
+        mySequence.Append(transform.DOMove(CurrentSlot.transform.position, TWEEN_DURATION).SetEase(Ease.Linear));
+
+        _tweenChain.AddAndPlay(mySequence);
+
+        await UniTask.Delay(TimeSpan.FromSeconds(TWEEN_DURATION));
+
+        if (oldSlot is BoardSlotFactory a)
+        {
+            a.Count--;
+        }
+    }
+
+    private async UniTaskVoid DelayedActivation(float delay)
     {
         if (delay > 0)
         {
-            Debug.Log("Delay: " + delay);
             await UniTask.Delay(TimeSpan.FromSeconds(delay));
         }
 
-        _tweenChain.AddAndPlay(transform.DOMove(transform.parent.position, .5f).SetEase(Ease.Linear));
+        gameObject.SetActive(true);
     }
 }

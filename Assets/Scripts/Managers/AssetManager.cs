@@ -23,6 +23,7 @@ public class AssetManager : MonoBehaviour
 
     // Assets
     public GameObject SlotPrefab;
+    public GameObject SlotFactoryPrefab;
     public GameObject ItemType00;
     public GameObject ItemType01;
     public GameObject ItemType02;

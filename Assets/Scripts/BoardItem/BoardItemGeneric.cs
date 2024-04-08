@@ -1,9 +1,17 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using DG.Tweening;
 
 public class BoardItemGeneric : BoardItem
 {
+    private readonly TweenChain _tweenChain = new TweenChain();
+    private void OnDestroy()
+    {
+        _tweenChain.Destroy();
+    }
+
     public override bool StartFalling()
     {
         BoardSlot slotToFallInto = GetSlotToFallInto();
@@ -16,9 +24,12 @@ public class BoardItemGeneric : BoardItem
         BoardSlot currentParent = transform.parent.GetComponent<BoardSlot>();
 
         transform.parent = slotToFallInto.transform;
-        transform.localPosition = Vector2.zero;
+        // transform.localPosition = Vector2.zero;
+        MoveAnimation(0).Forget();
 
         Board.Instance.OnSlotEmpty(currentParent);
+
+        // Debug.Log("from: " + currentParent.Position + " to " + slotToFallInto.Position, gameObject);
 
         return true;
     }
@@ -68,5 +79,16 @@ public class BoardItemGeneric : BoardItem
         }
 
         return null;
+    }
+
+    private async UniTaskVoid MoveAnimation(float delay)
+    {
+        if (delay > 0)
+        {
+            Debug.Log("Delay: " + delay);
+            await UniTask.Delay(TimeSpan.FromSeconds(delay));
+        }
+
+        _tweenChain.AddAndPlay(transform.DOMove(transform.parent.position, .5f).SetEase(Ease.Linear));
     }
 }

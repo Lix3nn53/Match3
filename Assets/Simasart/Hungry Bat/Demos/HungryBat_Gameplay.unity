@@ -2064,6 +2064,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SlotPrefab: {fileID: 4932696780612036309, guid: e8f351124ab2d2b479ddad7c142faf69, type: 3}
+  SlotFactoryPrefab: {fileID: 4932696780612036309, guid: 2957d670d5c0df249b24c85a7d876783, type: 3}
   ItemType00: {fileID: 4932696780612036309, guid: f8364b54423627d44a8354a881b87d2f, type: 3}
   ItemType01: {fileID: 4932696780612036309, guid: 42169c91645bb2249891ebae8026ab44, type: 3}
   ItemType02: {fileID: 4932696780612036309, guid: 415a4d5ba8acc3646b48d5a2db0afeb8, type: 3}

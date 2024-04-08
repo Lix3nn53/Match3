@@ -11,6 +11,7 @@ public class Board : MonoBehaviour
     private BoardSlot[,] _grid;
 
     private GameObject _slotPrefab;
+    private GameObject _slotFactoryPrefab;
     // Singleton
     public static Board Instance { get; private set; }
 
@@ -32,6 +33,7 @@ public class Board : MonoBehaviour
     private void Start()
     {
         _slotPrefab = AssetManager.Instance.SlotPrefab;
+        _slotFactoryPrefab = AssetManager.Instance.SlotFactoryPrefab;
 
         _grid = new BoardSlot[_width, _height + 1];
 
@@ -48,27 +50,21 @@ public class Board : MonoBehaviour
             {
                 Vector2 pos = new Vector2(startX + (i * _halfDistance * 2) + _halfDistance, startY + (j * _halfDistance * 2) + _halfDistance);
 
-                GameObject slotGameObject = Instantiate(_slotPrefab, pos, Quaternion.identity, transform);
+                GameObject prefab = j == _height ? _slotFactoryPrefab : _slotPrefab;
+                GameObject slotGameObject = Instantiate(prefab, pos, Quaternion.identity, transform);
+
                 BoardSlot boardSlot = slotGameObject.GetComponent<BoardSlot>();
+                boardSlot.FillRandom();
+
                 boardSlot.Position = new Vector2Int(i, j);
                 _grid[i, j] = boardSlot;
 
                 slotGameObject.name = "GridSlot(" + i + ", " + j + ")";
-
-                if (j == _height)
-                {
-                    slotGameObject.SetActive(false);
-                    boardSlot.FillRandom(false);
-                }
-                else
-                {
-                    boardSlot.FillRandom(true);
-                }
             }
         }
     }
 
-    public BoardSlot GetBoardSlot(Vector2Int center, Vector2Int offset)
+    public BoardSlot GetBoardSlot(Vector2Int center, Vector2Int offset = new Vector2Int())
     {
         int x = center.x + offset.x;
         int y = center.y + offset.y;
@@ -92,7 +88,7 @@ public class Board : MonoBehaviour
         item.DestroySelf();
 
         StartFallingInto(currentPosition);
-        StartFalling(GetBoardSlot(currentPosition, Vector2Int.zero));
+        StartFalling(GetBoardSlot(currentPosition));
     }
 
     public bool StartFalling(BoardSlot slot)
@@ -149,7 +145,7 @@ public class Board : MonoBehaviour
     {
         if (slot.Position.y == _height)
         {
-            slot.FillRandom(false);
+            slot.FillRandom();
         }
     }
 }

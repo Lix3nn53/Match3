@@ -58,7 +58,7 @@ public class BoardItemGeneric : BoardItem
         if (slot != null)
         {
             BoardItem currentItem = slot.CurrentItem;
-            if (currentItem == null)
+            if (currentItem == null && !slot.ItemIncoming)
             {
                 // if Middle Down is empty 
                 return slot;
@@ -71,10 +71,14 @@ public class BoardItemGeneric : BoardItem
         if (slot != null)
         {
             BoardItem currentItem = slot.CurrentItem;
-            if (currentItem == null)
+            if (currentItem == null && !slot.ItemIncoming)
             {
                 // if Middle Down Left is empty
-                return slot;
+                BoardSlot sideSlot = board.GetBoardSlot(currentPosition, Vector2Int.right);
+                if (sideSlot.ItemIncoming == null)
+                {
+                    return slot;
+                }
             }
         }
 
@@ -84,10 +88,23 @@ public class BoardItemGeneric : BoardItem
         if (slot != null)
         {
             BoardItem currentItem = slot.CurrentItem;
-            if (currentItem == null)
+            if (currentItem == null && !slot.ItemIncoming)
             {
                 // if Middle Down Right is empty
-                return slot;
+                BoardSlot sideSlot = board.GetBoardSlot(currentPosition, Vector2Int.left);
+                if (sideSlot.ItemIncoming == null)
+                {
+                    sideSlot = board.GetBoardSlot(currentPosition, Vector2Int.left + Vector2Int.left);
+
+                    if (
+                        sideSlot == null
+                        || (sideSlot.CurrentItem == null && sideSlot.ItemIncoming == null)
+                        || sideSlot.CurrentItem != null && sideSlot.CurrentItem is BoardItemObstacle
+                    )
+                    {
+                        return slot;
+                    }
+                }
             }
         }
 
@@ -98,6 +115,7 @@ public class BoardItemGeneric : BoardItem
     {
         // gameObject.SetActive(true);
         // transform.position = slotToFallInto.transform.position;
+        slotToFallInto.ItemIncoming = this;
 
         _tweenChain = DOTween.Sequence();
 
@@ -126,6 +144,7 @@ public class BoardItemGeneric : BoardItem
 
                 CurrentSlot = slotToFallInto;
                 slotToFallInto.CurrentItem = this;
+                slotToFallInto.ItemIncoming = null;
 
                 bool startFall = StartFalling();
                 if (startFall)

@@ -33,7 +33,25 @@ public class SwipeHandler : MonoBehaviour
             Board.Instance.DestroyOne(extraSlot.CurrentItem);
         }
 
-        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.down);
+        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.right);
+        if (extraSlot != null)
+        {
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
+        }
+
+        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.right);
+        if (extraSlot != null)
+        {
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
+        }
+
+        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.left);
+        if (extraSlot != null)
+        {
+            Board.Instance.DestroyOne(extraSlot.CurrentItem);
+        }
+
+        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.left);
         if (extraSlot != null)
         {
             Board.Instance.DestroyOne(extraSlot.CurrentItem);

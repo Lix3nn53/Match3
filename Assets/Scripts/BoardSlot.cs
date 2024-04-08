@@ -5,7 +5,7 @@ public class BoardSlot : MonoBehaviour
 {
     public Vector2Int Position;
     public BoardItem CurrentItem = null;
-
+    public BoardItem ItemIncoming = null;
     public virtual void FillRandom()
     {
         BoardItemType Type = GetRandomItem();

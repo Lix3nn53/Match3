@@ -9,6 +9,12 @@ public abstract class BoardItem : MonoBehaviour
     public BoardItemType ItemType => _itemType;
     public BoardSlot CurrentSlot;
 
+    private SpriteRenderer _spriteRenderer;
+    private void Awake()
+    {
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
     public virtual bool DestroySelf()
     {
         CurrentSlot.CurrentItem = null;
@@ -30,6 +36,10 @@ public abstract class BoardItem : MonoBehaviour
         }
     }
 
+    public void Debug()
+    {
+        _spriteRenderer.color = Color.red;
+    }
     public abstract void CancelMovement();
     public abstract bool StartFalling();
     public abstract bool MoveTo(BoardSlot slot, Action onComplete);

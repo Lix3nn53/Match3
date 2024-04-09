@@ -8,10 +8,34 @@ public class BoardSolver
     private readonly ISpecialItemDetector[] _specialItemDetectors;
     private readonly ISequenceDetector[] _sequenceDetectors;
 
-    public BoardSolver(ISequenceDetector[] sequenceDetectors, ISpecialItemDetector[] specialItemDetectors)
+    // public BoardSolver(ISequenceDetector[] sequenceDetectors, ISpecialItemDetector[] specialItemDetectors)
+    // {
+    //     _sequenceDetectors = sequenceDetectors;
+    //     _specialItemDetectors = specialItemDetectors;
+    // }
+
+    public BoardSolver()
     {
-        _sequenceDetectors = sequenceDetectors;
-        _specialItemDetectors = specialItemDetectors;
+        _sequenceDetectors = GetSequenceDetectors();
+        _specialItemDetectors = GetSpecialItemDetectors();
+    }
+
+    private ISequenceDetector[] GetSequenceDetectors()
+    {
+        return new ISequenceDetector[]
+        {
+            new VerticalLineDetector(),
+            new HorizontalLineDetector()
+        };
+    }
+
+    private ISpecialItemDetector[] GetSpecialItemDetectors()
+    {
+        return new ISpecialItemDetector[]
+        {
+            // new StoneItemDetector(),
+            // new IceItemDetector()
+        };
     }
 
     public SolvedData Solve(Board gameBoard, params Vector2Int[] Vector2Ints)

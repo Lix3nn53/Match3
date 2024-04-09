@@ -164,7 +164,6 @@ public class BoardItemGeneric : BoardItem
                     Board.Instance.StartFallingInto(slotToFallInto.Position);
                 }
 
-                _tweenSquence.Kill();
                 _tweenSquence = null;
             })
         );

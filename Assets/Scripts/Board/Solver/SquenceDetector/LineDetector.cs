@@ -33,6 +33,11 @@ public abstract class LineDetector : ISequenceDetector
         Vector2Int newPosition = position + direction;
         List<BoardSlot> slotsSequence = new List<BoardSlot>();
 
+        if (slot.CurrentItem == null)
+        {
+            return slotsSequence;
+        }
+
         BoardItemType positionType = slot.CurrentItem.ItemType;
 
         while (board.GetBoardSlot(newPosition) != null)

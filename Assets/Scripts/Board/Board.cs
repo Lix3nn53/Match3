@@ -16,6 +16,8 @@ public class Board : MonoBehaviour
     // Singleton
     public static Board Instance { get; private set; }
 
+    private BoardSolver _boardSolver;
+
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -39,6 +41,8 @@ public class Board : MonoBehaviour
         _grid = new BoardSlot[_width, _height + 1];
 
         SetUp();
+
+        _boardSolver = new BoardSolver();
     }
     private void SetUp()
     {
@@ -103,7 +107,6 @@ public class Board : MonoBehaviour
         }
 
         StartFallingInto(currentPosition);
-        // StartFalling(GetBoardSlot(currentPosition));
     }
 
     public bool StartFalling(BoardSlot slot)
@@ -169,7 +172,7 @@ public class Board : MonoBehaviour
         BoardSlot slot1 = GetBoardSlot(pos1);
         BoardSlot slot2 = GetBoardSlot(pos2);
 
-        if (slot1.CurrentItem == null || slot2.CurrentItem == null)
+        if (slot1 == null || slot2 == null || slot1.CurrentItem == null || slot2.CurrentItem == null)
         {
             return;
         }
@@ -185,14 +188,35 @@ public class Board : MonoBehaviour
         item1.ClearCurrentSlot();
         item2.ClearCurrentSlot();
 
-        item1.MoveTo(slot2, () =>
+        item1.MoveTo(slot2, () => OnSwapComplete(pos1, pos2, item1, item2, slot1, slot2));
+        item2.MoveTo(slot1, null);
+    }
+
+    private void OnSwapComplete(Vector2Int pos1, Vector2Int pos2, BoardItem item1, BoardItem item2, BoardSlot slot1, BoardSlot slot2)
+    {
+        // Check match
+        if (IsSolved(pos1, pos2, out SolvedData solvedData))
         {
+            foreach (BoardSlot slot in solvedData.GetSolvedGridSlots())
+            {
+                // slot.CurrentItem.Debug();
+                DestroyOne(slot.CurrentItem);
+            }
+        }
+        else
+        {
+            // Revert swap
             item2.CancelMovement();
             item2.ClearCurrentSlot();
 
             item1.MoveTo(slot1, null);
             item2.MoveTo(slot2, null);
-        });
-        item2.MoveTo(slot1, null);
+        }
+    }
+
+    protected bool IsSolved(Vector2Int position1, Vector2Int position2, out SolvedData solvedData)
+    {
+        solvedData = _boardSolver.Solve(this, position1, position2);
+        return solvedData.SolvedSequences.Count > 0;
     }
 }

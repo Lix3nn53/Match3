@@ -23,6 +23,12 @@ public class BoardItemGeneric : BoardItem
         return base.DestroySelf();
     }
 
+    public override void CancelMovement()
+    {
+        _tweenSquence?.Kill();
+        _tweenSquence = null;
+    }
+
     public override bool StartFalling()
     {
         BoardSlot slotToFallInto = GetSlotToFallInto();
@@ -44,11 +50,11 @@ public class BoardItemGeneric : BoardItem
         return true;
     }
 
-    public override bool MoveTo(BoardSlot slot)
+    public override bool MoveTo(BoardSlot slot, Action onComplete)
     {
         ClearCurrentSlot();
 
-        StartMoveAnimation(slot);
+        StartMoveAnimation(slot, onComplete);
 
         return true;
     }
@@ -158,6 +164,7 @@ public class BoardItemGeneric : BoardItem
                     Board.Instance.StartFallingInto(slotToFallInto.Position);
                 }
 
+                _tweenSquence.Kill();
                 _tweenSquence = null;
             })
         );
@@ -165,12 +172,13 @@ public class BoardItemGeneric : BoardItem
         _tweenSquence.Play();
     }
 
-    private void StartMoveAnimation(BoardSlot slotToMoveInto)
+    private void StartMoveAnimation(BoardSlot slotToMoveInto, Action onComplete)
     {
         // gameObject.SetActive(true);
         // transform.position = slotToFallInto.transform.position;
         slotToMoveInto.ItemIncoming = this;
 
+        _tweenSquence?.Kill();
         _tweenSquence = DOTween.Sequence();
 
         _tweenSquence.Append(
@@ -186,7 +194,10 @@ public class BoardItemGeneric : BoardItem
                 slotToMoveInto.CurrentItem = this;
                 slotToMoveInto.ItemIncoming = null;
 
+                _tweenSquence.Kill();
                 _tweenSquence = null;
+
+                onComplete?.Invoke();
             })
         );
 

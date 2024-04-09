@@ -5,7 +5,8 @@ using UnityEngine;
 
 public abstract class BoardItem : MonoBehaviour
 {
-    [SerializeField] private BoardItemType _type;
+    [SerializeField] private BoardItemType _itemType;
+    public BoardItemType ItemType => _itemType;
     public BoardSlot CurrentSlot;
 
     public virtual bool DestroySelf()
@@ -29,6 +30,7 @@ public abstract class BoardItem : MonoBehaviour
         }
     }
 
+    public abstract void CancelMovement();
     public abstract bool StartFalling();
-    public abstract bool MoveTo(BoardSlot slot);
+    public abstract bool MoveTo(BoardSlot slot, Action onComplete);
 }

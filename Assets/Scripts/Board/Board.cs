@@ -177,10 +177,22 @@ public class Board : MonoBehaviour
         BoardItem item1 = slot1.CurrentItem;
         BoardItem item2 = slot2.CurrentItem;
 
+        if (item1 is BoardItemObstacle || item2 is BoardItemObstacle)
+        {
+            return;
+        }
+
         item1.ClearCurrentSlot();
         item2.ClearCurrentSlot();
 
-        item1.MoveTo(slot2);
-        item2.MoveTo(slot1);
+        item1.MoveTo(slot2, () =>
+        {
+            item2.CancelMovement();
+            item2.ClearCurrentSlot();
+
+            item1.MoveTo(slot1, null);
+            item2.MoveTo(slot2, null);
+        });
+        item2.MoveTo(slot1, null);
     }
 }

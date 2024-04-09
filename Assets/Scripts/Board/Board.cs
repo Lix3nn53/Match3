@@ -106,7 +106,7 @@ public class Board : MonoBehaviour
             return;
         }
 
-        StartFallingInto(currentPosition);
+        // StartFallingInto(currentPosition);
     }
 
     public bool StartFalling(BoardSlot slot)
@@ -188,8 +188,8 @@ public class Board : MonoBehaviour
         item1.ClearCurrentSlot();
         item2.ClearCurrentSlot();
 
-        item1.MoveTo(slot2, () => OnSwapComplete(pos1, pos2, item1, item2, slot1, slot2));
-        item2.MoveTo(slot1, null);
+        item1.MoveTo(slot2, null);
+        item2.MoveTo(slot1, () => OnSwapComplete(pos1, pos2, item1, item2, slot1, slot2));
     }
 
     private void OnSwapComplete(Vector2Int pos1, Vector2Int pos2, BoardItem item1, BoardItem item2, BoardSlot slot1, BoardSlot slot2)
@@ -202,11 +202,15 @@ public class Board : MonoBehaviour
                 // slot.CurrentItem.Debug();
                 DestroyOne(slot.CurrentItem);
             }
+            foreach (BoardSlot slot in solvedData.GetSolvedGridSlots())
+            {
+                StartFallingInto(slot.Position);
+            }
         }
         else
         {
             // Revert swap
-            item2.CancelMovement();
+            item1.ClearCurrentSlot();
             item2.ClearCurrentSlot();
 
             item1.MoveTo(slot1, null);

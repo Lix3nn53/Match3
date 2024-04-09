@@ -40,9 +40,9 @@ public abstract class LineDetector : ISequenceDetector
 
         BoardItemType positionType = slot.CurrentItem.ItemType;
 
-        while (board.GetBoardSlot(newPosition) != null)
+        BoardSlot currentSlot = board.GetBoardSlot(newPosition);
+        while (currentSlot != null)
         {
-            BoardSlot currentSlot = board.GetBoardSlot(newPosition);
             if (currentSlot.CurrentItem == null)
             {
                 break;
@@ -50,8 +50,10 @@ public abstract class LineDetector : ISequenceDetector
 
             if (currentSlot.CurrentItem.ItemType == positionType)
             {
-                newPosition += direction;
                 slotsSequence.Add(currentSlot);
+
+                newPosition += direction;
+                currentSlot = board.GetBoardSlot(newPosition);
             }
             else
             {

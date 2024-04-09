@@ -38,16 +38,16 @@ public class BoardSolver
         };
     }
 
-    public SolvedData Solve(Board gameBoard, params Vector2Int[] Vector2Ints)
+    public SolvedData Solve(Board gameBoard, params Vector2Int[] positions)
     {
         var resultSequences = new Collection<ItemSequence>();
         var specialItemGridSlots = new HashSet<BoardSlot>();
 
-        foreach (var Vector2Int in Vector2Ints)
+        foreach (var position in positions)
         {
             foreach (var sequenceDetector in _sequenceDetectors)
             {
-                var sequence = sequenceDetector.GetSequence(gameBoard, Vector2Int);
+                var sequence = sequenceDetector.GetSequence(gameBoard, position);
                 if (sequence == null)
                 {
                     continue;

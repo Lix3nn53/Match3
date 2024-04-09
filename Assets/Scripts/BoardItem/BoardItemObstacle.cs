@@ -8,4 +8,8 @@ public class BoardItemObstacle : BoardItem
     {
         return false;
     }
+    public override bool MoveTo(BoardSlot slot)
+    {
+        return false;
+    }
 }

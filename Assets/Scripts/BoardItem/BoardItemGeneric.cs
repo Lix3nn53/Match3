@@ -7,15 +7,15 @@ using DG.Tweening;
 public class BoardItemGeneric : BoardItem
 {
     public static float TWEEN_DURATION = .5f;
-    private Sequence _tweenChain;
+    private Sequence _tweenSquence;
     private void OnDestroy()
     {
-        _tweenChain?.Kill();
+        _tweenSquence?.Kill();
     }
 
     public override bool DestroySelf()
     {
-        if (_tweenChain != null)
+        if (_tweenSquence != null)
         {
             return false;
         }
@@ -33,16 +33,22 @@ public class BoardItemGeneric : BoardItem
         }
 
         BoardSlot oldSlot = CurrentSlot;
-        oldSlot.CurrentItem = null;
+
+        CurrentSlot.CurrentItem = null;
         CurrentSlot = null;
+
         Board.Instance.OnSlotEmpty(oldSlot);
 
-        StartMoveAnimation(oldSlot, slotToFallInto);
+        StartFallAnimation(oldSlot, slotToFallInto);
 
-        // if (oldSlot is BoardSlotFactory boardSlotFactory)
-        // {
-        //     Debug.Log("from: " + oldSlot.Position + " to " + slotToFallInto.Position, gameObject);
-        // }
+        return true;
+    }
+
+    public override bool MoveTo(BoardSlot slot)
+    {
+        ClearCurrentSlot();
+
+        StartMoveAnimation(slot);
 
         return true;
     }
@@ -111,13 +117,13 @@ public class BoardItemGeneric : BoardItem
         return null;
     }
 
-    private void StartMoveAnimation(BoardSlot oldSlot, BoardSlot slotToFallInto)
+    private void StartFallAnimation(BoardSlot oldSlot, BoardSlot slotToFallInto)
     {
         // gameObject.SetActive(true);
         // transform.position = slotToFallInto.transform.position;
         slotToFallInto.ItemIncoming = this;
 
-        _tweenChain = DOTween.Sequence();
+        _tweenSquence = DOTween.Sequence();
 
         if (oldSlot is BoardSlotFactory boardSlotFactory)
         {
@@ -125,10 +131,10 @@ public class BoardItemGeneric : BoardItem
 
             boardSlotFactory.CountForDelay++;
 
-            _tweenChain.PrependInterval(startDelay);
+            _tweenSquence.PrependInterval(startDelay);
         }
 
-        _tweenChain.Append(
+        _tweenSquence.Append(
             transform.DOMove(slotToFallInto.transform.position, TWEEN_DURATION)
             .SetEase(Ease.Linear)
             .OnStart(() =>
@@ -152,10 +158,38 @@ public class BoardItemGeneric : BoardItem
                     Board.Instance.StartFallingInto(slotToFallInto.Position);
                 }
 
-                _tweenChain = null;
+                _tweenSquence = null;
             })
         );
 
-        _tweenChain.Play();
+        _tweenSquence.Play();
+    }
+
+    private void StartMoveAnimation(BoardSlot slotToMoveInto)
+    {
+        // gameObject.SetActive(true);
+        // transform.position = slotToFallInto.transform.position;
+        slotToMoveInto.ItemIncoming = this;
+
+        _tweenSquence = DOTween.Sequence();
+
+        _tweenSquence.Append(
+            transform.DOMove(slotToMoveInto.transform.position, TWEEN_DURATION)
+            .SetEase(Ease.Linear)
+            .OnStart(() =>
+            {
+                gameObject.SetActive(true);
+            })
+            .OnComplete(() =>
+            {
+                CurrentSlot = slotToMoveInto;
+                slotToMoveInto.CurrentItem = this;
+                slotToMoveInto.ItemIncoming = null;
+
+                _tweenSquence = null;
+            })
+        );
+
+        _tweenSquence.Play();
     }
 }

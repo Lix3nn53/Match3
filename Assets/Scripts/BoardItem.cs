@@ -20,6 +20,15 @@ public abstract class BoardItem : MonoBehaviour
 
         return true;
     }
+    public void ClearCurrentSlot()
+    {
+        if (CurrentSlot != null)
+        {
+            CurrentSlot.CurrentItem = null;
+            CurrentSlot = null;
+        }
+    }
 
     public abstract bool StartFalling();
+    public abstract bool MoveTo(BoardSlot slot);
 }

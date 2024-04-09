@@ -24,37 +24,26 @@ public class SwipeHandler : MonoBehaviour
         }
 
         Vector2Int currentPosition = item.CurrentSlot.Position;
+        Vector2Int swipePosition;
 
-        Board.Instance.DestroyOne(item);
-
-        BoardSlot extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down);
-        if (extraSlot != null)
+        switch (swipeType)
         {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
+            case SwipeType.Left:
+                swipePosition = currentPosition + Vector2Int.left;
+                break;
+            case SwipeType.Right:
+                swipePosition = currentPosition + Vector2Int.right;
+                break;
+            case SwipeType.Up:
+                swipePosition = currentPosition + Vector2Int.up;
+                break;
+            case SwipeType.Down:
+                swipePosition = currentPosition + Vector2Int.down;
+                break;
+            default:
+                return;
         }
 
-        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.right);
-        if (extraSlot != null)
-        {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
-        }
-
-        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.right);
-        if (extraSlot != null)
-        {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
-        }
-
-        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.down + Vector2Int.left);
-        if (extraSlot != null)
-        {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
-        }
-
-        extraSlot = Board.Instance.GetBoardSlot(currentPosition, Vector2Int.left);
-        if (extraSlot != null)
-        {
-            Board.Instance.DestroyOne(extraSlot.CurrentItem);
-        }
+        Board.Instance.Swap(currentPosition, swipePosition);
     }
 }

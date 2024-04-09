@@ -163,4 +163,24 @@ public class Board : MonoBehaviour
             slot.FillRandom();
         }
     }
+
+    public void Swap(Vector2Int pos1, Vector2Int pos2)
+    {
+        BoardSlot slot1 = GetBoardSlot(pos1);
+        BoardSlot slot2 = GetBoardSlot(pos2);
+
+        if (slot1.CurrentItem == null || slot2.CurrentItem == null)
+        {
+            return;
+        }
+
+        BoardItem item1 = slot1.CurrentItem;
+        BoardItem item2 = slot2.CurrentItem;
+
+        item1.ClearCurrentSlot();
+        item2.ClearCurrentSlot();
+
+        item1.MoveTo(slot2);
+        item2.MoveTo(slot1);
+    }
 }

@@ -8,7 +8,7 @@ public class BoardItemObstacle : BoardItem
     {
 
     }
-    public override bool StartFalling()
+    public override bool StartFalling(int alreadyFalled = 0)
     {
         return false;
     }

@@ -7,6 +7,9 @@ using DG.Tweening;
 public class BoardItemGeneric : BoardItem
 {
     public static float TWEEN_DURATION = .2f;
+    public static float TWEEN_DURATION_PERCENT_STEP = .15f;
+    public static float TWEEN_DURATION_MIN = .01f;
+    public static float TWEEN_SHAKE_DISTANCE = .25f;
     private Sequence _tweenSquence;
     private void OnDestroy()
     {
@@ -29,9 +32,11 @@ public class BoardItemGeneric : BoardItem
         _tweenSquence = null;
     }
 
-    public override bool StartFalling()
+    public override bool StartFalling(int alreadyFalled = 0)
     {
-        BoardSlot slotToFallInto = GetSlotToFallInto();
+        Board board = CurrentSlot.Board;
+
+        BoardSlot slotToFallInto = GetSlotToFallInto(board);
 
         if (slotToFallInto == null)
         {
@@ -43,9 +48,9 @@ public class BoardItemGeneric : BoardItem
         CurrentSlot.CurrentItem = null;
         CurrentSlot = null;
 
-        Board.Instance.OnSlotEmpty(oldSlot);
+        oldSlot.Board.OnSlotEmpty(oldSlot);
 
-        StartFallAnimation(oldSlot, slotToFallInto);
+        StartFallAnimation(oldSlot, slotToFallInto, alreadyFalled);
 
         return true;
     }
@@ -59,10 +64,8 @@ public class BoardItemGeneric : BoardItem
         return true;
     }
 
-    private BoardSlot GetSlotToFallInto()
+    private BoardSlot GetSlotToFallInto(Board board)
     {
-        Board board = Board.Instance;
-
         Vector2Int currentPosition = CurrentSlot.Position;
 
         // Middle Down
@@ -123,17 +126,22 @@ public class BoardItemGeneric : BoardItem
         return null;
     }
 
-    private void StartFallAnimation(BoardSlot oldSlot, BoardSlot slotToFallInto)
+    private void StartFallAnimation(BoardSlot oldSlot, BoardSlot slotToFallInto, int alreadyFalled)
     {
+        Board board = oldSlot.Board;
+
         // gameObject.SetActive(true);
         // transform.position = slotToFallInto.transform.position;
         slotToFallInto.ItemIncoming = this;
 
         _tweenSquence = DOTween.Sequence();
 
+        float duration = TWEEN_DURATION * (1f - (alreadyFalled * TWEEN_DURATION_PERCENT_STEP));
+        duration = Mathf.Max(duration, TWEEN_DURATION_MIN);
+
         if (oldSlot is BoardSlotFactory boardSlotFactory)
         {
-            float startDelay = boardSlotFactory.CountForDelay * TWEEN_DURATION;
+            float startDelay = boardSlotFactory.CountForDelay * duration;
 
             boardSlotFactory.CountForDelay++;
 
@@ -141,7 +149,7 @@ public class BoardItemGeneric : BoardItem
         }
 
         _tweenSquence.Append(
-            transform.DOMove(slotToFallInto.transform.position, TWEEN_DURATION)
+            transform.DOMove(slotToFallInto.transform.position, duration)
             .SetEase(Ease.Linear)
             .OnStart(() =>
             {
@@ -158,10 +166,14 @@ public class BoardItemGeneric : BoardItem
                 slotToFallInto.CurrentItem = this;
                 slotToFallInto.ItemIncoming = null;
 
-                bool startFall = StartFalling();
+                bool startFall = StartFalling(alreadyFalled + 1);
                 if (startFall)
                 {
-                    Board.Instance.StartFallingInto(slotToFallInto.Position);
+                    board.StartFallingInto(slotToFallInto.Position);
+                }
+                else
+                {
+                    PlayShakeVertical();
                 }
 
                 _tweenSquence = null;
@@ -182,7 +194,7 @@ public class BoardItemGeneric : BoardItem
 
         _tweenSquence.Append(
             transform.DOMove(slotToMoveInto.transform.position, TWEEN_DURATION)
-            .SetEase(Ease.Linear)
+            .SetEase(Ease.OutSine)
             .OnStart(() =>
             {
                 gameObject.SetActive(true);
@@ -201,5 +213,10 @@ public class BoardItemGeneric : BoardItem
         );
 
         _tweenSquence.Play();
+    }
+
+    private void PlayShakeVertical()
+    {
+        transform.DOPunchPosition(Vector2.down * TWEEN_SHAKE_DISTANCE, TWEEN_DURATION, 1, 0);
     }
 }

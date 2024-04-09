@@ -17,11 +17,13 @@ public abstract class BoardItem : MonoBehaviour
 
     public virtual bool DestroySelf()
     {
-        CurrentSlot.CurrentItem = null;
+        if (CurrentSlot != null)
+        {
+            CurrentSlot.Board.OnSlotEmpty(CurrentSlot);
+            CurrentSlot.CurrentItem = null;
+        }
 
         Destroy(gameObject);
-
-        Board.Instance.OnSlotEmpty(CurrentSlot);
 
         CurrentSlot = null;
 
@@ -41,6 +43,6 @@ public abstract class BoardItem : MonoBehaviour
         _spriteRenderer.color = Color.red;
     }
     public abstract void CancelMovement();
-    public abstract bool StartFalling();
+    public abstract bool StartFalling(int alreadyFalled = 0);
     public abstract bool MoveTo(BoardSlot slot, Action onComplete);
 }

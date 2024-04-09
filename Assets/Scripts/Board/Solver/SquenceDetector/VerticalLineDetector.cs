@@ -11,6 +11,6 @@ public class VerticalLineDetector : LineDetector
 
     public override ItemSequence GetSequence(Board board, Vector2Int position)
     {
-        return GetSequenceByDirection(position, _lineDirections);
+        return GetSequenceByDirection(board, position, _lineDirections);
     }
 }

@@ -44,6 +44,6 @@ public class SwipeHandler : MonoBehaviour
                 return;
         }
 
-        Board.Instance.Swap(currentPosition, swipePosition);
+        item.CurrentSlot.Board.Swap(currentPosition, swipePosition);
     }
 }

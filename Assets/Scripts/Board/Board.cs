@@ -13,24 +13,6 @@ public class Board : MonoBehaviour
 
     private GameObject _slotPrefab;
     private GameObject _slotFactoryPrefab;
-    // Singleton
-    public static Board Instance { get; private set; }
-
-    private BoardSolver _boardSolver;
-
-    private void Awake()
-    {
-        // If there is an instance, and it's not me, delete myself.
-
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
-    }
 
     // Start is called before the first frame update
     private void Start()
@@ -41,9 +23,8 @@ public class Board : MonoBehaviour
         _grid = new BoardSlot[_width, _height + 1];
 
         SetUp();
-
-        _boardSolver = new BoardSolver();
     }
+
     private void SetUp()
     {
         float startX = (-_width * _halfDistance) + transform.position.x;
@@ -59,6 +40,7 @@ public class Board : MonoBehaviour
                 GameObject slotGameObject = Instantiate(prefab, pos, Quaternion.identity, transform);
 
                 BoardSlot boardSlot = slotGameObject.GetComponent<BoardSlot>();
+                boardSlot.Board = this;
                 boardSlot.FillRandom();
 
                 boardSlot.Position = new Vector2Int(i, j);
@@ -69,13 +51,19 @@ public class Board : MonoBehaviour
         }
     }
 
-    public BoardSlot GetBoardSlot(Vector2Int center, Vector2Int offset = new Vector2Int())
+    public BoardSlot GetBoardSlot(Vector2Int center, Vector2Int offset = new Vector2Int(), bool includeFactory = true)
     {
         int x = center.x + offset.x;
         int y = center.y + offset.y;
 
         // Check if the coordinates are within the bounds of the grid
-        if (x >= 0 && x < _width && y >= 0 && y < _height + 1)
+        int height = _height;
+        if (includeFactory)
+        {
+            height++;
+        }
+
+        if (x >= 0 && x < _width && y >= 0 && y < height)
         {
             return _grid[x, y];
         }
@@ -220,7 +208,7 @@ public class Board : MonoBehaviour
 
     protected bool IsSolved(Vector2Int position1, Vector2Int position2, out SolvedData solvedData)
     {
-        solvedData = _boardSolver.Solve(this, position1, position2);
+        solvedData = GameManager.Instance.BoardSolver.Solve(this, position1, position2);
         return solvedData.SolvedSequences.Count > 0;
     }
 }

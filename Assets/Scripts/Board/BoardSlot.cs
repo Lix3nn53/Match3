@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class BoardSlot : MonoBehaviour
 {
+    public Board Board;
     public Vector2Int Position;
     public BoardItem CurrentItem = null;
     public BoardItem ItemIncoming = null;
@@ -46,7 +47,7 @@ public class BoardSlot : MonoBehaviour
         CurrentItem = boardItemGameObject.GetComponent<BoardItem>();
         CurrentItem.CurrentSlot = this;
 
-        CurrentItem.gameObject.name = "Item#" + Board.Instance.ItemCount;
-        Board.Instance.ItemCount++;
+        CurrentItem.gameObject.name = "Item#" + Board.ItemCount;
+        Board.ItemCount++;
     }
 }

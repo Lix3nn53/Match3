@@ -6,10 +6,8 @@ public abstract class LineDetector : ISequenceDetector
 {
     public abstract ItemSequence GetSequence(Board board, Vector2Int Vector2Int);
 
-    protected ItemSequence GetSequenceByDirection(Vector2Int position, IEnumerable<Vector2Int> directions)
+    protected ItemSequence GetSequenceByDirection(Board board, Vector2Int position, IEnumerable<Vector2Int> directions)
     {
-        Board board = Board.Instance;
-
         BoardSlot gridSlot = board.GetBoardSlot(position);
         List<BoardSlot> gridSlots = new List<BoardSlot>();
 
@@ -40,7 +38,7 @@ public abstract class LineDetector : ISequenceDetector
 
         BoardItemType positionType = slot.CurrentItem.ItemType;
 
-        BoardSlot currentSlot = board.GetBoardSlot(newPosition);
+        BoardSlot currentSlot = board.GetBoardSlot(newPosition, includeFactory: false);
         while (currentSlot != null)
         {
             if (currentSlot.CurrentItem == null)
@@ -53,7 +51,7 @@ public abstract class LineDetector : ISequenceDetector
                 slotsSequence.Add(currentSlot);
 
                 newPosition += direction;
-                currentSlot = board.GetBoardSlot(newPosition);
+                currentSlot = board.GetBoardSlot(newPosition, includeFactory: false);
             }
             else
             {

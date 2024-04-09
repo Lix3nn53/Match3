@@ -8,17 +8,9 @@ public class BoardSlot : MonoBehaviour
     public BoardItem ItemIncoming = null;
     public virtual void FillRandom()
     {
-        BoardItemType Type = GetRandomItem();
+        BoardItemType type = GetRandomItem();
 
-        GameObject _slotPrefab = AssetManager.Instance.GetItemTypePrefab(Type);
-
-        GameObject boardItemGameObject = Instantiate(_slotPrefab, transform.position, Quaternion.identity, null);
-
-        CurrentItem = boardItemGameObject.GetComponent<BoardItem>();
-        CurrentItem.CurrentSlot = this;
-
-        CurrentItem.gameObject.name = "Item#" + Board.Instance.ItemCount;
-        Board.Instance.ItemCount++;
+        ReplaceWith(type);
     }
 
     // Function to get a random enum value
@@ -34,5 +26,27 @@ public class BoardSlot : MonoBehaviour
         BoardItemType randomEnumValue = (BoardItemType)enumValues.GetValue(randomIndex);
 
         return randomEnumValue;
+    }
+    public virtual void ReplaceWith(BoardItemType type)
+    {
+        if (ItemIncoming)
+        {
+            return;
+        }
+
+        if (CurrentItem != null)
+        {
+            CurrentItem.DestroySelf();
+        }
+
+        GameObject _slotPrefab = AssetManager.Instance.GetItemTypePrefab(type);
+
+        GameObject boardItemGameObject = Instantiate(_slotPrefab, transform.position, Quaternion.identity, null);
+
+        CurrentItem = boardItemGameObject.GetComponent<BoardItem>();
+        CurrentItem.CurrentSlot = this;
+
+        CurrentItem.gameObject.name = "Item#" + Board.Instance.ItemCount;
+        Board.Instance.ItemCount++;
     }
 }

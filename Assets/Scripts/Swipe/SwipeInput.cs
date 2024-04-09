@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /*
@@ -50,7 +51,10 @@ public class SwipeInput : MonoBehaviour
                 Vector2 swipe = new Vector2(endPosPercent.x - startPosPercent.x, endPosPercent.y - startPosPercent.y);
 
                 if (swipe.magnitude < MIN_SWIPE_DISTANCE) // Too short swipe
+                {
+                    HandleTap(_startPos);
                     return;
+                }
 
                 SwipeType swipeType = CalculateSwipeAngle(startPosPercent, endPosPercent);
 
@@ -90,6 +94,27 @@ public class SwipeInput : MonoBehaviour
         }
 
         return SwipeType.Invalid;
+    }
+
+    private void HandleTap(Vector2 tapPosition)
+    {
+        // Handle tap action
+        Vector3 clickedPosition = Camera.main.ScreenToWorldPoint(tapPosition);
+        RaycastHit2D hit = Physics2D.Raycast(clickedPosition, -Vector2.up);
+        if (hit)
+        {
+            BoardItem item = hit.collider.gameObject.GetComponent<BoardItem>();
+            BoardItemType nextType = GetNextEnumValue(item.ItemType);
+
+            item.CurrentSlot.ReplaceWith(nextType);
+        }
+    }
+
+    public BoardItemType GetNextEnumValue(BoardItemType current)
+    {
+        // Cast enum to its underlying type (int), increment it, and cast it back to enum type
+        int nextValue = ((int)current + 1) % Enum.GetValues(typeof(BoardItemType)).Length;
+        return (BoardItemType)nextValue;
     }
 }
 public enum SwipeType

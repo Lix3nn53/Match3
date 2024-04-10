@@ -6,10 +6,6 @@ using DG.Tweening;
 
 public class BoardItemGeneric : BoardItem
 {
-    public static float TWEEN_DURATION = .2f;
-    public static float TWEEN_DURATION_PERCENT_STEP = .15f;
-    public static float TWEEN_DURATION_MIN = .01f;
-    public static float TWEEN_SHAKE_DISTANCE = .25f;
     private Sequence _tweenSquence;
     private void OnDestroy()
     {

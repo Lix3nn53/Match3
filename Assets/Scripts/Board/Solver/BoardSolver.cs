@@ -45,6 +45,13 @@ public class BoardSolver
 
         foreach (var position in positions)
         {
+            BoardItem boardItem = gameBoard.GetBoardSlot(position).CurrentItem;
+
+            if (!boardItem.ItemType.CanMatch())
+            {
+                continue;
+            }
+
             foreach (var sequenceDetector in _sequenceDetectors)
             {
                 var sequence = sequenceDetector.GetSequence(gameBoard, position);

@@ -2,9 +2,14 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using DG.Tweening;
 
 public abstract class BoardItem : MonoBehaviour
 {
+    public static float TWEEN_DURATION = .2f;
+    public static float TWEEN_DURATION_PERCENT_STEP = .15f;
+    public static float TWEEN_DURATION_MIN = .01f;
+    public static float TWEEN_SHAKE_DISTANCE = .25f;
     [SerializeField] private BoardItemType _itemType;
     public BoardItemType ItemType => _itemType;
     public BoardSlot CurrentSlot;
@@ -23,9 +28,9 @@ public abstract class BoardItem : MonoBehaviour
             CurrentSlot.CurrentItem = null;
         }
 
-        Destroy(gameObject);
-
         CurrentSlot = null;
+
+        transform.DOScale(0, TWEEN_DURATION / 2f).OnComplete(() => Destroy(gameObject));
 
         return true;
     }

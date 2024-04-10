@@ -12,6 +12,11 @@ public class SolvedData
     public IReadOnlyCollection<BoardSlot> SpecialItemGridSlots { get; }
     public IReadOnlyCollection<ItemSequence> SolvedSequences { get; }
 
+    public bool IsSolved()
+    {
+        return SolvedSequences.Count > 0;
+    }
+
     public IEnumerable<BoardSlot> GetSolvedGridSlots(bool onlyMovable = false)
     {
         foreach (var sequence in SolvedSequences)

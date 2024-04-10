@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BoardSlot : MonoBehaviour
@@ -7,28 +7,29 @@ public class BoardSlot : MonoBehaviour
     public Vector2Int Position;
     public BoardItem CurrentItem = null;
     public BoardItem ItemIncoming = null;
-    public virtual void FillRandom()
+
+    public virtual List<BoardItemType> DefaultFactoryValues()
     {
-        BoardItemType type = GetRandomItem();
+        return new(){
+            BoardItemType.Type00,
+            BoardItemType.Type01,
+            BoardItemType.Type02,
+            BoardItemType.Type03,
+            BoardItemType.Obstacle01
+        };
+    }
+
+    public virtual void FillRandom(List<BoardItemType> values = null)
+    {
+        values ??= DefaultFactoryValues();
+
+        int randomIndex = UnityEngine.Random.Range(0, values.Count);
+        BoardItemType type = values[randomIndex];
 
         ReplaceWith(type);
     }
 
-    // Function to get a random enum value
-    public virtual BoardItemType GetRandomItem()
-    {
-        // Get all values of the enum
-        Array enumValues = Enum.GetValues(typeof(BoardItemType));
-
-        // Generate a random index
-        int randomIndex = UnityEngine.Random.Range(0, enumValues.Length);
-
-        // Get the enum value at the random index
-        BoardItemType randomEnumValue = (BoardItemType)enumValues.GetValue(randomIndex);
-
-        return randomEnumValue;
-    }
-    public virtual void ReplaceWith(BoardItemType type)
+    public void ReplaceWith(BoardItemType type)
     {
         if (ItemIncoming)
         {

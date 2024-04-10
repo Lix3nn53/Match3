@@ -27,6 +27,8 @@ public class Board : MonoBehaviour
 
     private void SetUp()
     {
+        int fillDebug = 0;
+
         float startX = (-_width * _halfDistance) + transform.position.x;
         float startY = (-_height * _halfDistance) + transform.position.y;
 
@@ -37,18 +39,42 @@ public class Board : MonoBehaviour
                 Vector2 pos = new Vector2(startX + (i * _halfDistance * 2) + _halfDistance, startY + (j * _halfDistance * 2) + _halfDistance);
 
                 GameObject prefab = j == _height ? _slotFactoryPrefab : _slotPrefab;
+
                 GameObject slotGameObject = Instantiate(prefab, pos, Quaternion.identity, transform);
+                slotGameObject.name = "GridSlot(" + i + ", " + j + ")";
 
                 BoardSlot boardSlot = slotGameObject.GetComponent<BoardSlot>();
-                boardSlot.Board = this;
-                boardSlot.FillRandom();
-
-                boardSlot.Position = new Vector2Int(i, j);
                 _grid[i, j] = boardSlot;
 
-                slotGameObject.name = "GridSlot(" + i + ", " + j + ")";
+                boardSlot.Board = this;
+                boardSlot.Position = new Vector2Int(i, j);
+
+                List<BoardItemType> defaultFactory = boardSlot.DefaultFactoryValues();
+
+                boardSlot.FillRandom(defaultFactory);
+                fillDebug++;
+
+                if (j != _height)
+                {
+                    SolvedData solvedData = GetSolution(boardSlot.Position);
+
+                    while (solvedData.IsSolved())
+                    {
+                        defaultFactory.Remove(boardSlot.CurrentItem.ItemType);
+                        if (defaultFactory.Count == 0)
+                        {
+                            Debug.LogError("Cant place item without solution at " + boardSlot.Position);
+                            break;
+                        }
+                        boardSlot.FillRandom(defaultFactory);
+                        fillDebug++;
+                        solvedData = GetSolution(boardSlot.Position);
+                    }
+                }
             }
         }
+
+        Debug.Log("fillDebug: " + fillDebug);
     }
 
     public BoardSlot GetBoardSlot(Vector2Int center, Vector2Int offset = new Vector2Int(), bool includeFactory = true)
@@ -183,7 +209,9 @@ public class Board : MonoBehaviour
     private void OnSwapComplete(Vector2Int pos1, Vector2Int pos2, BoardItem item1, BoardItem item2, BoardSlot slot1, BoardSlot slot2)
     {
         // Check match
-        if (IsSolved(pos1, pos2, out SolvedData solvedData))
+        SolvedData solvedData = GetSolution(pos1, pos2);
+
+        if (solvedData.IsSolved())
         {
             foreach (BoardSlot slot in solvedData.GetSolvedGridSlots())
             {
@@ -206,9 +234,8 @@ public class Board : MonoBehaviour
         }
     }
 
-    protected bool IsSolved(Vector2Int position1, Vector2Int position2, out SolvedData solvedData)
+    protected SolvedData GetSolution(params Vector2Int[] positions)
     {
-        solvedData = GameManager.Instance.BoardSolver.Solve(this, position1, position2);
-        return solvedData.SolvedSequences.Count > 0;
+        return GameManager.Instance.BoardSolver.Solve(this, positions);
     }
 }

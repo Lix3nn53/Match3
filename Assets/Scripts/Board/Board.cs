@@ -203,10 +203,10 @@ public class Board : MonoBehaviour
         item2.ClearCurrentSlot();
 
         item1.MoveTo(slot2, null);
-        item2.MoveTo(slot1, () => OnSwapComplete(pos1, pos2, item1, item2, slot1, slot2));
+        item2.MoveTo(slot1, () => OnSwapComplete(pos1, pos2, item1, item2, slot1, slot2, true));
     }
 
-    private void OnSwapComplete(Vector2Int pos1, Vector2Int pos2, BoardItem item1, BoardItem item2, BoardSlot slot1, BoardSlot slot2)
+    private void OnSwapComplete(Vector2Int pos1, Vector2Int pos2, BoardItem item1, BoardItem item2, BoardSlot slot1, BoardSlot slot2, bool revert)
     {
         // Check match
         SolvedData solvedData = GetSolution(pos1, pos2);
@@ -223,14 +223,14 @@ public class Board : MonoBehaviour
                 StartFallingInto(slot.Position);
             }
         }
-        else
+        else if (revert)
         {
             // Revert swap
             item1.ClearCurrentSlot();
             item2.ClearCurrentSlot();
 
             item1.MoveTo(slot1, null);
-            item2.MoveTo(slot2, null);
+            item2.MoveTo(slot2, () => OnSwapComplete(pos1, pos2, item1, item2, slot1, slot2, false));
         }
     }
 

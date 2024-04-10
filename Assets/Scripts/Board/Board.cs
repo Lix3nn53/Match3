@@ -131,7 +131,7 @@ public class Board : MonoBehaviour
             if (currentItem == null)
             {
                 // if empty do nothing and return
-                return true;
+                return false;
             }
             bool startFall = currentItem.StartFalling();
             if (startFall)

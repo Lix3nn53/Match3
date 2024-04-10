@@ -6,13 +6,14 @@ using DG.Tweening;
 
 public abstract class BoardItem : MonoBehaviour
 {
-    public static float TWEEN_DURATION = .2f;
-    public static float TWEEN_DURATION_PERCENT_STEP = .15f;
-    public static float TWEEN_DURATION_MIN = .01f;
+    public static float TWEEN_DURATION = .25f;
+    public static float TWEEN_DURATION_MIN = .1f;
+    public static float TWEEN_DURATION_PERCENT_STEP = .2f;
     public static float TWEEN_SHAKE_DISTANCE = .25f;
     [SerializeField] private BoardItemType _itemType;
     public BoardItemType ItemType => _itemType;
     public BoardSlot CurrentSlot;
+    public Tween CurrentTween;
 
     private SpriteRenderer _spriteRenderer;
     private void Awake()
@@ -20,8 +21,13 @@ public abstract class BoardItem : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public virtual bool DestroySelf()
+    public bool DestroySelf()
     {
+        if (CurrentTween != null)
+        {
+            return false;
+        }
+
         if (CurrentSlot != null)
         {
             CurrentSlot.Board.OnSlotEmpty(CurrentSlot);
@@ -30,7 +36,8 @@ public abstract class BoardItem : MonoBehaviour
 
         CurrentSlot = null;
 
-        transform.DOScale(0, TWEEN_DURATION / 2f).OnComplete(() => Destroy(gameObject));
+        CurrentTween?.Kill();
+        CurrentTween = transform.DOScale(0, TWEEN_DURATION / 2f).OnComplete(() => Destroy(gameObject));
 
         return true;
     }
@@ -43,7 +50,7 @@ public abstract class BoardItem : MonoBehaviour
         }
     }
 
-    public void Debug()
+    public void DebugColor()
     {
         _spriteRenderer.color = Color.red;
     }

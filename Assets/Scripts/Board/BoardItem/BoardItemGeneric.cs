@@ -6,26 +6,15 @@ using DG.Tweening;
 
 public class BoardItemGeneric : BoardItem
 {
-    private Sequence _tweenSquence;
     private void OnDestroy()
     {
-        _tweenSquence?.Kill();
-    }
-
-    public override bool DestroySelf()
-    {
-        if (_tweenSquence != null)
-        {
-            return false;
-        }
-
-        return base.DestroySelf();
+        CurrentTween?.Kill();
     }
 
     public override void CancelMovement()
     {
-        _tweenSquence?.Kill();
-        _tweenSquence = null;
+        CurrentTween?.Kill();
+        CurrentTween = null;
     }
 
     public override bool StartFalling(int alreadyFalled = 0)
@@ -130,7 +119,9 @@ public class BoardItemGeneric : BoardItem
         // transform.position = slotToFallInto.transform.position;
         slotToFallInto.ItemIncoming = this;
 
-        _tweenSquence = DOTween.Sequence();
+        CurrentTween?.Kill();
+        Sequence tweenSquence = DOTween.Sequence();
+        CurrentTween = tweenSquence;
 
         float duration = TWEEN_DURATION * (1f - (alreadyFalled * TWEEN_DURATION_PERCENT_STEP));
         duration = Mathf.Max(duration, TWEEN_DURATION_MIN);
@@ -141,10 +132,10 @@ public class BoardItemGeneric : BoardItem
 
             boardSlotFactory.CountForDelay++;
 
-            _tweenSquence.PrependInterval(startDelay);
+            tweenSquence.PrependInterval(startDelay);
         }
 
-        _tweenSquence.Append(
+        tweenSquence.Append(
             transform.DOMove(slotToFallInto.transform.position, duration)
             .SetEase(Ease.Linear)
             .OnStart(() =>
@@ -169,14 +160,14 @@ public class BoardItemGeneric : BoardItem
                 }
                 else
                 {
-                    PlayShakeVertical();
+                    OnFallComplete(board, slotToFallInto);
                 }
 
-                _tweenSquence = null;
+                CurrentTween = null;
             })
         );
 
-        _tweenSquence.Play();
+        CurrentTween.Play();
     }
 
     private void StartMoveAnimation(BoardSlot slotToMoveInto, Action onComplete)
@@ -185,10 +176,11 @@ public class BoardItemGeneric : BoardItem
         // transform.position = slotToFallInto.transform.position;
         slotToMoveInto.ItemIncoming = this;
 
-        _tweenSquence?.Kill();
-        _tweenSquence = DOTween.Sequence();
+        CurrentTween?.Kill();
+        Sequence tweenSquence = DOTween.Sequence();
+        CurrentTween = tweenSquence;
 
-        _tweenSquence.Append(
+        tweenSquence.Append(
             transform.DOMove(slotToMoveInto.transform.position, TWEEN_DURATION)
             .SetEase(Ease.OutSine)
             .OnStart(() =>
@@ -201,18 +193,19 @@ public class BoardItemGeneric : BoardItem
                 slotToMoveInto.CurrentItem = this;
                 slotToMoveInto.ItemIncoming = null;
 
-                _tweenSquence.Kill();
-                _tweenSquence = null;
+                CurrentTween.Kill();
+                CurrentTween = null;
 
                 onComplete?.Invoke();
             })
         );
 
-        _tweenSquence.Play();
+        CurrentTween.Play();
     }
 
-    private void PlayShakeVertical()
+    private void OnFallComplete(Board board, BoardSlot slotToFallInto)
     {
-        transform.DOPunchPosition(Vector2.down * TWEEN_SHAKE_DISTANCE, TWEEN_DURATION, 1, 0);
+        CurrentTween = transform.DOPunchPosition(Vector2.down * TWEEN_SHAKE_DISTANCE, TWEEN_DURATION, 1, 0)
+            .OnComplete(() => board.OnFallComplete(slotToFallInto.Position));
     }
 }

@@ -238,4 +238,23 @@ public class Board : MonoBehaviour
     {
         return GameManager.Instance.BoardSolver.Solve(this, positions);
     }
+
+    public void OnFallComplete(Vector2Int pos)
+    {
+        // Check match
+        SolvedData solvedData = GetSolution(pos);
+
+        if (solvedData.IsSolved())
+        {
+            foreach (BoardSlot slot in solvedData.GetSolvedGridSlots())
+            {
+                // slot.CurrentItem.Debug();
+                DestroyOne(slot.CurrentItem);
+            }
+            foreach (BoardSlot slot in solvedData.GetSolvedGridSlots())
+            {
+                StartFallingInto(slot.Position);
+            }
+        }
+    }
 }

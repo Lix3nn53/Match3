@@ -45,8 +45,17 @@ public class BoardSolver
 
         foreach (var position in positions)
         {
-            BoardItem boardItem = gameBoard.GetBoardSlot(position).CurrentItem;
+            BoardSlot boardSlot = gameBoard.GetBoardSlot(position);
+            if (boardSlot == null)
+            {
+                continue;
+            }
 
+            BoardItem boardItem = boardSlot.CurrentItem;
+            if (boardItem == null)
+            {
+                continue;
+            }
             if (!boardItem.ItemType.CanMatch())
             {
                 continue;
